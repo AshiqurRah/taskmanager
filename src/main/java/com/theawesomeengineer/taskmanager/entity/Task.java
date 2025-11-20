@@ -1,6 +1,8 @@
 package com.theawesomeengineer.taskmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 /**
@@ -17,11 +19,15 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Task title - cannot be null
+    // Task title - cannot be empty (validation)
+    @NotBlank(message = "Title is required")
+    @Size(max = 255, message = "Title cannot exceed 255 characters")
     @Column(nullable = false)
     private String title;
 
-    // Task description - cannot be null
+    // Task description - cannot be empty (validation)
+    @NotBlank(message = "Description is required")
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     @Column(nullable = false)
     private String description;
 

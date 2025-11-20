@@ -5,9 +5,11 @@ import com.theawesomeengineer.taskmanager.mapper.TaskMapper;
 import com.theawesomeengineer.taskmanager.model.Task;
 import com.theawesomeengineer.taskmanager.model.TaskRequest;
 import com.theawesomeengineer.taskmanager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class TaskController implements TasksApi {
 
     // POST /tasks - create a new task
     @Override
-    public ResponseEntity<Task> createTask(TaskRequest taskRequest) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest taskRequest) {
         // Get data from request
         String title = taskRequest.getTitle();
         String description = taskRequest.getDescription();
@@ -85,7 +87,7 @@ public class TaskController implements TasksApi {
 
     // PUT /tasks/{id} - update an existing task
     @Override
-    public ResponseEntity<Task> updateTask(Long id, TaskRequest taskRequest) {
+    public ResponseEntity<Task> updateTask(Long id, @Valid @RequestBody TaskRequest taskRequest) {
         // Get data from request
         String title = taskRequest.getTitle();
         String description = taskRequest.getDescription();

@@ -3,11 +3,15 @@ package com.theawesomeengineer.taskmanager.exception;
 import com.theawesomeengineer.taskmanager.model.Error;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Global Exception Handler - catches errors from the whole application
@@ -27,6 +31,31 @@ public class GlobalExceptionHandler {
 
         // Return 404 NOT FOUND
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    // Handle validation errors (like missing required fields) - returns 400
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Error> handleValidationError(MethodArgumentNotValidException exception) {
+        // Get all validation errors
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+
+        // Collect error messages
+        List<String> errorMessages = new ArrayList<>();
+        for (FieldError fieldError : fieldErrors) {
+            errorMessages.add(fieldError.getDefaultMessage());
+        }
+
+        // Combine all error messages
+        String allErrors = String.join(", ", errorMessages);
+
+        // Create error response
+        Error error = new Error();
+        error.setMessage("Validation failed");
+        error.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC));
+        error.setDetails(allErrors);
+
+        // Return 400 BAD REQUEST
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     // Handle all other unexpected errors - returns 500

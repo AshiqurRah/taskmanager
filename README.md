@@ -228,41 +228,6 @@ The workflow file is in `.github/workflows/ci-cd.yml`
 - Every time I push code to `main` or `develop` branch
 - Every time I create a pull request
 
-You can see the results at: `https://github.com/ashiqurrah/taskmanager/actions`
-
-## Project Structure
-
-Here's how I organized the files:
-
-```
-taskmanager/
-├── src/main/java/.../taskmanager/
-│   ├── controller/
-│   │   └── TaskController.java       ← Handles HTTP requests
-│   ├── service/
-│   │   └── TaskService.java          ← Business logic
-│   ├── repository/
-│   │   └── TaskRepository.java       ← Talks to database
-│   ├── entity/
-│   │   └── Task.java                 ← Database model
-│   ├── mapper/
-│   │   └── TaskMapper.java           ← Converts between models
-│   └── exception/
-│       ├── TaskNotFoundException.java
-│       └── GlobalExceptionHandler.java
-│
-├── src/test/java/.../taskmanager/
-│   ├── service/
-│   │   └── TaskServiceTest.java      ← Unit tests
-│   └── integration/
-│       └── TaskApiIntegrationTest.java ← API tests
-│
-├── build.gradle                       ← Dependencies & build config
-├── openapi.yaml                       ← API specification
-├── docker-compose.yml                 ← Docker setup
-├── Dockerfile                         ← How to build the app
-└── run.sh                             ← Easy start script
-```
 
 ## Things I Assumed While Building
 
@@ -285,7 +250,6 @@ Things I didn't have time to add but would be cool:
 3. **Better Performance**:
    - Pagination (only load 10 tasks at a time)
    - Search and filter tasks
-   - Caching frequently accessed data
 4. **Monitoring**: Add Grafana dashboards to see how the API is performing
 5. **Soft Delete**: Keep deleted tasks in the database (just mark them as deleted)
 
@@ -304,7 +268,13 @@ lsof -i :8080
 
 ### Problem: "Docker daemon not running"
 
-Make sure Docker Desktop is running! Look for the Docker icon in your menu bar.
+Make sure Docker Desktop is running, Look for the Docker icon in your menu bar. Can check using this command:
+
+```bash
+# See whether docker daemon is running
+docker ps
+
+```
 
 ### Problem: App won't start
 
@@ -338,4 +308,4 @@ I built this as my first Spring Boot project to learn how to:
 - Use Docker
 - Follow OpenAPI specifications
 
-This was a great learning experience!
+It was a great learning experience.
