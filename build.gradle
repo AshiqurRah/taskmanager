@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.openapi.generator' version '7.10.0'
+	id 'jacoco'
 }
 
 group = 'com.theawesomeengineer'
@@ -9,7 +11,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
@@ -18,11 +20,70 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Database
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// OpenAPI/Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.27'
+
+	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:testcontainers:1.20.4'
+	testImplementation 'org.testcontainers:mysql:1.20.4'
+	testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// OpenAPI Generator Configuration
+openApiGenerate {
+	generatorName = 'spring'
+	inputSpec = "$rootDir/openapi.yaml".toString()
+	outputDir = "$buildDir/generated".toString()
+	apiPackage = 'com.theawesomeengineer.taskmanager.api'
+	modelPackage = 'com.theawesomeengineer.taskmanager.model'
+	configOptions = [
+		dateLibrary: 'java8',
+		interfaceOnly: 'true',
+		useTags: 'true',
+		useSpringBoot3: 'true',
+		skipDefaultInterface: 'true',
+		documentationProvider: 'springdoc'
+	]
+}
+
+// Add generated sources to source sets
+sourceSets {
+	main {
+		java {
+			srcDir "$buildDir/generated/src/main/java"
+		}
+	}
+}
+
+// Generate OpenAPI code before compiling
+compileJava.dependsOn tasks.openApiGenerate
+
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+// JaCoCo configuration for code coverage
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.12"
 }
